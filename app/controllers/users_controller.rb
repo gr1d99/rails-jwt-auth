@@ -3,7 +3,7 @@ class UsersController < ApplicationController
     @user = User.create(user_params)
 
     if @user.valid?
-      token = generate_auth_token(@user)
+      token = generate_auth_token(@user, user_params[:password])
       attach_auth_token(token)
       render_resource(@user, :created)
     else
@@ -14,8 +14,7 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:email,
-                                 :password)
+    params.require(:user).permit(:email, :password)
   end
 
   def resource_invalid!(resource)
@@ -25,9 +24,5 @@ class UsersController < ApplicationController
       detail: I18n.t("errors.unprocessable_entity.detail"),
       errors: resource.errors
     }, status: :unprocessable_entity
-  end
-
-  def render_resource(resource, status = :ok)
-    render json: resource, status: status
   end
 end

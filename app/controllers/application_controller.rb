@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::API
   before_action :set_locale
 
+  include Errors::ErrorHandler
+
   private
 
   def set_locale
@@ -27,5 +29,14 @@ class ApplicationController < ActionController::API
       detail: I18n.t("errors.unauthorized.detail"),
       errors: [I18n.t("errors.unauthorized.error_message")]
     }, status: :unauthorized
+  end
+
+  def parameter_missing!(error)
+    render json: {
+      status: I18n.t("errors.parameter_missing.status"),
+      title: I18n.t("errors.parameter_missing.title"),
+      detail: I18n.t("errors.parameter_missing.detail"),
+      errors: error
+    }, status: :bad_request
   end
 end
